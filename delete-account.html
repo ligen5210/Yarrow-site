@@ -10,8 +10,6 @@
   .disc{font-size:13px;color:#78716C;border-top:1px solid #D6CFC0;margin-top:32px;padding-top:16px}
   a{color:#C0401E}
   .box{background:#FFFDF8;border:1px solid #D6CFC0;border-radius:8px;padding:16px 20px;margin:16px 0}
-  input[type=text]{width:100%;padding:10px 12px;border:1px solid #D6CFC0;border-radius:6px;font-family:inherit;font-size:15px;box-sizing:border-box}
-  button{background:#C0401E;color:#FFFDF8;border:0;border-radius:6px;padding:10px 18px;font-family:inherit;font-size:15px;cursor:pointer}
   .note{font-size:13px;color:#78716C}
 </style>
 </head>
@@ -19,63 +17,31 @@
   <h1>Delete your account</h1>
   <p>You can delete your Yarrow account and personal data in two ways:</p>
 
-  <div class="box"><strong>Option 1 — in the app (recommended)</strong><br>Open Yarrow → <em>Settings</em> → <em>Delete account</em> and confirm.</div>
+  <div class="box"><strong>Option 1 — in the app (recommended, self-serve)</strong><br>Open Yarrow → <em>Settings</em> → <em>Delete account</em> and confirm. Your account is marked for deletion immediately, your personal data is removed, and any active membership is revoked. The deletion cannot be undone after a 7-day grace period.</div>
 
   <div class="box">
-    <strong>Option 2 — on this page, without the app</strong>
-    <p>Enter the <strong>account ID</strong> shown inside the app (Settings → Delete account → the code displayed on that screen). We use it to locate your data — do <strong>not</strong> send us your password or birth details.</p>
-    <form id="delForm">
-      <label for="accountId"><strong>Your account ID</strong></label><br><br>
-      <input type="text" id="accountId" name="accountId" placeholder="e.g. 7f3c-xxxx-xxxx" autocomplete="off">
-      <br><br>
-      <button type="submit" id="delBtn">Request deletion</button>
-    </form>
-    <p id="delResult" class="note"></p>
-    <p class="note">This web form submits your deletion request to the same backend the app uses. Your personal data is then removed within 7 days, and you can return to this page and re-enter the same account ID to check the request status.</p>
+    <strong>Option 2 — by email (if you cannot use the app)</strong>
+    <p>Email <a href="mailto:yifei4trade@gmail.com?subject=Account%20deletion%20request">yifei4trade@gmail.com</a> with the subject <em>“Account deletion request”</em>.</p>
+    <p>If you still have the app installed, please first open <em>Settings → Export my data</em> and attach the exported file to your email — it lets us locate your record precisely. If you no longer have the app, include anything that helps us identify your purchase, for example the Google Play order number (format <em>GPA.xxxx-xxxx-xxxx-xxxxx</em>) from your Play purchase receipt, and the approximate date you installed the app.</p>
+    <p class="note">We action email requests within 7 days and confirm to you by reply.</p>
   </div>
 
   <h2>Before you delete</h2>
   <ul>
-    <li><strong>Cancel your subscription first</strong>, in Google Play: <em>Play Store → Payments &amp; subscriptions → Subscriptions → Yarrow → Cancel</em> (<a href="https://play.google.com/store/account/subscriptions?sku=yarrow.membership&amp;package=com.dagen989.yarrow">open your Play subscriptions</a>). Deleting the account does not cancel a renewal on its own.</li>
-    <li>Deleting removes your data permanently and cannot be undone. If you want a copy first, use <em>Settings → Export my data</em> in the app, or ask us (§ Questions below).</li>
+    <li><strong>Cancel your subscription first</strong>, in Google Play: <em>Play Store → Payments &amp; subscriptions → Subscriptions → Yarrow → Cancel</em> (<a href="https://play.google.com/store/account/subscriptions?sku=yarrow.membership&amp;package=com.dagen989.yarrow">open your Play subscriptions</a>). Deleting the account revokes access but does not cancel a Play renewal on its own.</li>
+    <li>Deleting removes your data permanently and cannot be undone. If you want a copy first, use <em>Settings → Export my data</em> in the app.</li>
   </ul>
 
   <h2>What happens next</h2>
   <ul>
     <li>Your personal data is deleted within <strong>7 days</strong>.</li>
     <li>Deleted: birth details, name/nickname, gender, email (if provided), journal entries, your card and report history, app settings, notification token.</li>
-    <li>Kept (with identifying details stripped): anonymous accounting records we are legally required to keep (up to 7 years), and anti-fraud records.</li>
+    <li>Kept in de-identified form only: accounting records we are legally required to keep (up to 7 years; payment tokens and receipts are stripped), and anonymized safety events.</li>
   </ul>
 
   <h2>Questions</h2>
   <p>See the <a href="privacy.html">Privacy Policy</a> or email <a href="mailto:yifei4trade@gmail.com">yifei4trade@gmail.com</a>.</p>
 
   <p class="disc">For entertainment and self-reflection purposes only. Not a substitute for professional medical, financial, or legal advice.</p>
-  <script>
-    // 后端接入点：delete-account edge function 部署后即生效（B6 验收项）；
-    // 未部署期间提交会得到明确错误提示，不假装成功（诚实纪律）。
-    document.getElementById('delForm').addEventListener('submit', async function (e) {
-      e.preventDefault();
-      var id = document.getElementById('accountId').value.trim();
-      var out = document.getElementById('delResult');
-      if (!id) { out.textContent = 'Please enter the account ID shown in the app.'; return; }
-      out.textContent = 'Submitting…';
-      try {
-        var res = await fetch('https://jtoigctllgegjpzpohnc.supabase.co/functions/v1/delete-account', {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ account_id: id, source: 'web' })
-        });
-        var txt = await res.text();
-        if (res.ok) {
-          out.textContent = 'Your deletion request has been received. Personal data is removed within 7 days. Keep this account ID — re-enter it here any time to check the status.';
-        } else {
-          out.textContent = 'The request could not be completed (' + res.status + '). Please try again later or contact us by email.';
-        }
-      } catch (err) {
-        out.textContent = 'Network error — please try again later or contact us by email.';
-      }
-    });
-  </script>
 </body>
 </html>
